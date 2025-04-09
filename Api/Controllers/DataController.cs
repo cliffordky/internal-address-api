@@ -36,6 +36,7 @@ namespace Api.Controllers
                         request.State,
                         request.Zip,
                         request.ISOA3CountryCode,
+                        request.AddressTypeId.ToString(),
                         request.RecordDate
                     );
 
@@ -53,6 +54,7 @@ namespace Api.Controllers
                     State = address.State,
                     Zip = address.Zip,
                     ISOA3CountryCode = address.ISOA3CountryCode,
+                    AddressTypeId = Int32.Parse(address.AddressTypeId),
                     RecordDate = address.RecordDate
                 });
             }
@@ -82,6 +84,7 @@ namespace Api.Controllers
                         State = x.State,
                         Zip = x.Zip,
                         ISOA3CountryCode = x.ISOA3CountryCode,
+                        AddressTypeId = Int32.Parse(x.AddressTypeId),
                         RecordDate = x.RecordDate
                     }).ToList());
             }

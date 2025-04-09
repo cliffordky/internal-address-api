@@ -68,6 +68,7 @@ namespace Api
                 loggerConfig.ReadFrom.Configuration(hostingContext.Configuration);
                 loggerConfig.Enrich.FromLogContext();
             });
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
