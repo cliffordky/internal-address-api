@@ -29,8 +29,8 @@ namespace Api.Controllers
             {
                 var address = new Core.Models.Address(
                         Guid.NewGuid(),
+                         request.ConsumerId,
                         request.SubscriberId,
-                        request.ConsumerId,
                         request.AddressLine1,
                         request.AddressLine2,
                         request.City,
