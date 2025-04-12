@@ -29,6 +29,7 @@ namespace Api.Controllers
             {
                 var address = new Core.Models.Address(
                         Guid.NewGuid(),
+                        request.SubscriberId,
                         request.ConsumerId,
                         request.AddressLine1,
                         request.AddressLine2,
@@ -48,6 +49,7 @@ namespace Api.Controllers
                 {
                     Id = address.Id,
                     ConsumerId = address.ConsumerId,
+                    SubscriberId = address.SubscriberId,
                     AddressLine1 = address.AddressLine1,
                     AddressLine2 = address.AddressLine2,
                     City = address.City,
@@ -78,6 +80,7 @@ namespace Api.Controllers
                     {
                         Id = x.Id,
                         ConsumerId = x.ConsumerId,
+                        SubscriberId = x.SubscriberId,
                         AddressLine1 = x.AddressLine1,
                         AddressLine2 = x.AddressLine2,
                         City = x.City,

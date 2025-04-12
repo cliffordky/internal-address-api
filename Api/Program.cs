@@ -2,7 +2,6 @@ using Coravel;
 using Core.Encryption;
 using Core.Models;
 using Marten;
-using Microsoft.OpenApi.Models;
 using Serilog;
 using Weasel.Core;
 
