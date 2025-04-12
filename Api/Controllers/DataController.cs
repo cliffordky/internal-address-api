@@ -27,9 +27,28 @@ namespace Api.Controllers
         {
             try
             {
+                string hash = Core.Encryption.Hash.GetHashString(
+                    request.ConsumerId.ToString() +
+                    request.SubscriberId.ToString() +
+                    request.AddressLine1 +
+                    request.AddressLine2 +
+                    request.City +
+                    request.State +
+                    request.Zip +
+                    request.ISOA3CountryCode +
+                    request.AddressTypeCode +
+                    request.RecordDate);
+
+                await using var session = _store.LightweightSession();
+                var existing = await session.Query<Core.Models.Address>().SingleOrDefaultAsync(x => x.Hash == hash);
+                if (existing != null)
+                {
+                    return Result<Models.v1.AddressResponse>.Error("Address already exists");
+                }
+
                 var address = new Core.Models.Address(
                         Guid.NewGuid(),
-                         request.ConsumerId,
+                        request.ConsumerId,
                         request.SubscriberId,
                         request.AddressLine1,
                         request.AddressLine2,
@@ -37,11 +56,10 @@ namespace Api.Controllers
                         request.State,
                         request.Zip,
                         request.ISOA3CountryCode,
-                        request.AddressTypeId.ToString(),
-                        request.RecordDate
-                    );
+                        request.AddressTypeCode,
+                        request.RecordDate,
+                        hash);
 
-                await using var session = _store.LightweightSession();
                 session.Store(address);
                 await session.SaveChangesAsync();
 
@@ -56,7 +74,7 @@ namespace Api.Controllers
                     State = address.State,
                     Zip = address.Zip,
                     ISOA3CountryCode = address.ISOA3CountryCode,
-                    AddressTypeId = Int32.Parse(address.AddressTypeId),
+                    AddressTypeCode = address.AddressTypeCode,
                     RecordDate = address.RecordDate
                 });
             }
@@ -87,7 +105,7 @@ namespace Api.Controllers
                         State = x.State,
                         Zip = x.Zip,
                         ISOA3CountryCode = x.ISOA3CountryCode,
-                        AddressTypeId = Int32.Parse(x.AddressTypeId),
+                        AddressTypeCode = x.AddressTypeCode,
                         RecordDate = x.RecordDate
                     }).ToList());
             }
