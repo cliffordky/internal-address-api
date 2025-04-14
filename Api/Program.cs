@@ -53,7 +53,9 @@ namespace Api
                     .AddEncryptionRuleForProtectedInformation(x => x.City)
                     .AddEncryptionRuleForProtectedInformation(x => x.State)
                     .AddEncryptionRuleForProtectedInformation(x => x.Zip)
-                    .AddEncryptionRuleForProtectedInformation(x => x.ISOA3CountryCode);
+                    .AddEncryptionRuleForProtectedInformation(x => x.ISOA3CountryCode)
+                    .AddEncryptionRuleForProtectedInformation(x => x.StartDate)
+                    .AddEncryptionRuleForProtectedInformation(x => x.EndDate);
                 // If we're running in development mode, let Marten just take care
                 // of all necessary schema building and patching behind the scenes
                 if (builder.Environment.IsDevelopment())

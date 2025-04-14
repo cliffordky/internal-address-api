@@ -39,6 +39,8 @@ namespace Api.Controllers
                     request.Zip +
                     request.ISOA3CountryCode +
                     request.AddressTypeCode +
+                    request.StartDate.ToString("yyyy-MM-dd") +
+                    request.EndDate?.ToString("yyyy-MM-dd") +
                     request.RecordDate);
 
                 await using var session = _store.LightweightSession();
@@ -59,6 +61,8 @@ namespace Api.Controllers
                         request.Zip,
                         request.ISOA3CountryCode,
                         request.AddressTypeCode,
+                        request.StartDate.ToString("yyyy-MM-dd"),
+                        request.EndDate?.ToString("yyyy-MM-dd"),
                         request.RecordDate,
                         hash);
 
@@ -77,6 +81,8 @@ namespace Api.Controllers
                     Zip = address.Zip,
                     ISOA3CountryCode = address.ISOA3CountryCode,
                     AddressTypeCode = address.AddressTypeCode,
+                    StartDate = DateOnly.Parse(address.StartDate),
+                    EndDate = String.IsNullOrEmpty(address.EndDate) ? null : DateOnly.Parse(address.EndDate),
                     RecordDate = address.RecordDate
                 });
             }
@@ -109,6 +115,8 @@ namespace Api.Controllers
                         Zip = x.Zip,
                         ISOA3CountryCode = x.ISOA3CountryCode,
                         AddressTypeCode = x.AddressTypeCode,
+                        StartDate = DateOnly.Parse(x.StartDate),
+                        EndDate = String.IsNullOrEmpty(x.EndDate) ? null : DateOnly.Parse(x.EndDate),
                         RecordDate = x.RecordDate
                     }).ToList());
             }
