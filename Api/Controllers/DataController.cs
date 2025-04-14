@@ -2,6 +2,7 @@
 using Ardalis.Result.AspNetCore;
 using Coravel.Cache.Interfaces;
 using Marten;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
@@ -21,6 +22,7 @@ namespace Api.Controllers
             _cache = cache;
         }
 
+        [Authorize(Policy = "write")]
         [TranslateResultToActionResult]
         [HttpPost("address")]
         public async Task<Result<Models.v1.AddressResponse>> AddAddress(Models.v1.AddressRequest request)
@@ -84,6 +86,7 @@ namespace Api.Controllers
             }
         }
 
+        [Authorize(Policy = "read")]
         [TranslateResultToActionResult]
         [HttpGet("addresses")]
         public async Task<Result<List<Models.v1.AddressResponse>>> GetAddressesForConsumer(Guid ConsumerId)
