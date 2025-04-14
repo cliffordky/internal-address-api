@@ -11,6 +11,8 @@
         public string Zip { get; set; }
         public string ISOA3CountryCode { get; set; }
         public string AddressTypeCode { get; set; }
+        public DateOnly StartDate { get; set; }
+        public DateOnly? EndDate { get; set; }
         public DateTimeOffset RecordDate { get; set; }
     }
 }
