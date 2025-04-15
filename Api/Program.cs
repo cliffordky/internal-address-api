@@ -3,7 +3,6 @@ using Core.Encryption;
 using Core.Models;
 using dordle.common.service.Extensions;
 using Marten;
-using Microsoft.Extensions.Configuration;
 using Serilog;
 using Weasel.Core;
 
@@ -26,11 +25,6 @@ namespace Api
             builder.Services.AddSwaggerGenWithClientCredentials(builder.Configuration, options =>
             {
                 options.IncludeXmlComments(string.Format(@"{0}\Api.xml", System.AppDomain.CurrentDomain.BaseDirectory));
-                //c.SwaggerDoc("v1", new OpenApiInfo
-                //{
-                //    Version = "v1",
-                //    Title = "Api"
-                //});
             });
 
             builder.Services.AddCache();
@@ -84,6 +78,7 @@ namespace Api
 
             app.UseHttpsRedirection();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();

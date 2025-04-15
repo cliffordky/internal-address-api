@@ -22,7 +22,7 @@ namespace Api.Controllers
             _cache = cache;
         }
 
-        [Authorize(Policy = "write")]
+        [Authorize("write")]
         [TranslateResultToActionResult]
         [HttpPost("address")]
         public async Task<Result<Models.v1.AddressResponse>> AddAddress(Models.v1.AddressRequest request)
@@ -92,7 +92,7 @@ namespace Api.Controllers
             }
         }
 
-        [Authorize(Policy = "read")]
+        [Authorize("read")]
         [TranslateResultToActionResult]
         [HttpGet("addresses")]
         public async Task<Result<List<Models.v1.AddressResponse>>> GetAddressesForConsumer(Guid ConsumerId)

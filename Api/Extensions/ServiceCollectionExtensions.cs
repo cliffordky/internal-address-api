@@ -1,5 +1,6 @@
 ﻿using dordle.common.models.authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -38,6 +39,7 @@ namespace dordle.common.service.Extensions
                     {
                         ClientCredentials = new OpenApiOAuthFlow
                         {
+
                             //AuthorizationUrl = new Uri(authenticationOptions.AuthorizationUrl),
                             TokenUrl = new Uri(authenticationOptions.TokenUrl),
                             //Scopes = authenticationOptions.Scopes.Select(s => new KeyValuePair<string, string>(s, s)).ToDictionary()
@@ -83,12 +85,13 @@ namespace dordle.common.service.Extensions
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(o =>
                 {
-                    o.RequireHttpsMetadata = true;
+                    o.Authority = authenticationOptions.Authority;
                     o.Audience = authenticationOptions.Audience;
                     o.MetadataAddress = authenticationOptions.MetadataAddress;
                     o.TokenValidationParameters = new TokenValidationParameters
                     {
-                        ValidIssuer = authenticationOptions.ValidIssuer
+                        ValidIssuer = authenticationOptions.ValidIssuer,
+                        ValidAudience = authenticationOptions.Audience
                     };
                 });
 
@@ -113,36 +116,53 @@ namespace dordle.common.service.Extensions
             {
                 options.AddPolicy("read", policy =>
                 {
-                    policy.RequireAuthenticatedUser();
-                    policy.RequireAssertion(context =>
-                    {
-                        var scopeClaim = context.User.FindFirst(claim => claim.Type == "scope");
-                        if (scopeClaim != null)
-                        {
-                            return scopeClaim.Value.Split(' ').Any(s => s.Equals($"dordle:{authenticationOptions.ProtectedEntity}", StringComparison.OrdinalIgnoreCase));
-                        }
-                        return false;
-                    });
+                    //policy.RequireAuthenticatedUser();
+                    policy.Requirements.Add(new HasScopeRequirement($"dordle:{authenticationOptions.ProtectedEntity}", authenticationOptions.ValidIssuer));
                 });
                 options.AddPolicy("write", policy =>
                 {
-                    policy.RequireAuthenticatedUser();
-                    policy.RequireAssertion(context =>
-                    {
-                        var scopeClaim = context.User.FindFirst(claim => claim.Type == "scope");
-                        if (scopeClaim != null)
-                        {
-                            return scopeClaim.Value.Split(' ').Any(s => s.Equals($"dordle:{authenticationOptions.ProtectedEntity}:write", StringComparison.OrdinalIgnoreCase));
-                        }
-                        return false;
-                    });
+                    //policy.RequireAuthenticatedUser();
+                    policy.Requirements.Add(new HasScopeRequirement($"dordle:{authenticationOptions.ProtectedEntity}:write", authenticationOptions.ValidIssuer));
                 });
             });
+
+            services.AddSingleton<IAuthorizationHandler, HasScopeHandler>();
 
             //invoke the callback if configured
             action?.Invoke(services);
 
             return services;
+        }
+    }
+
+    public class HasScopeHandler : AuthorizationHandler<HasScopeRequirement>
+    {
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, HasScopeRequirement requirement)
+        {
+            // If user does not have the scope claim, get out of here
+            if (!context.User.HasClaim(c => c.Type == "scope" && c.Issuer == requirement.Issuer))
+                return Task.CompletedTask;
+
+            // Split the scopes string into an array
+            var scopes = context.User.FindFirst(c => c.Type == "scope" && c.Issuer == requirement.Issuer).Value.Split(' ');
+
+            // Succeed if the scope array contains the required scope
+            if (scopes.Any(s => s == requirement.Scope))
+                context.Succeed(requirement);
+
+            return Task.CompletedTask;
+        }
+    }
+
+    public class HasScopeRequirement : IAuthorizationRequirement
+    {
+        public string Issuer { get; }
+        public string Scope { get; }
+
+        public HasScopeRequirement(string scope, string issuer)
+        {
+            Scope = scope ?? throw new ArgumentNullException(nameof(scope));
+            Issuer = issuer ?? throw new ArgumentNullException(nameof(issuer));
         }
     }
 }
