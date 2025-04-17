@@ -39,10 +39,7 @@ namespace dordle.common.service.Extensions
                     {
                         ClientCredentials = new OpenApiOAuthFlow
                         {
-
-                            //AuthorizationUrl = new Uri(authenticationOptions.AuthorizationUrl),
-                            TokenUrl = new Uri(authenticationOptions.TokenUrl),
-                            //Scopes = authenticationOptions.Scopes.Select(s => new KeyValuePair<string, string>(s, s)).ToDictionary()
+                            TokenUrl = new Uri(authenticationOptions.TokenUrl)
                         }
                     }
                 });

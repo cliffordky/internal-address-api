@@ -92,7 +92,8 @@ namespace Api.Controllers
             }
         }
 
-        [Authorize("read")]
+        //[Authorize("read")]
+        [Authorize]
         [TranslateResultToActionResult]
         [HttpGet("addresses")]
         public async Task<Result<List<Models.v1.AddressResponse>>> GetAddressesForConsumer(Guid ConsumerId)
