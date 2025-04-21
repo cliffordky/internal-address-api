@@ -22,7 +22,8 @@ namespace Api.Controllers
             _cache = cache;
         }
 
-        [Authorize("write")]
+        //[Authorize("write")]
+        [Authorize]
         [TranslateResultToActionResult]
         [HttpPost("address")]
         public async Task<Result<Models.v1.AddressResponse>> AddAddress(Models.v1.AddressRequest request)
